@@ -1,50 +1,63 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+
+// 1. Define the GoodsBogie class with type and cargo properties
+class GoodsBogie {
+    String type;
+    String cargo;
+
+    public GoodsBogie(String type, String cargo) {
+        this.type = type;
+        this.cargo = cargo;
+    }
+
+    @Override
+    public String toString() {
+        return type + " [" + cargo + "]";
+    }
+}
 
 public class TrainApp {
-
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 1. Define the Regex Patterns
-        // TRN- followed by exactly 4 digits
-        String trainIdRegex = "TRN-\\d{4}";
-        // PET- followed by exactly 2 uppercase letters
-        String cargoCodeRegex = "PET-[A-Z]{2}";
+        // 2. Prepare a list of Goods Bogies
+        List<GoodsBogie> goodsConsist = new ArrayList<>();
+        goodsConsist.add(new GoodsBogie("Box", "Coal"));
+        goodsConsist.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        goodsConsist.add(new GoodsBogie("Open", "Grain"));
 
-        // 2. Compile the Patterns (for efficiency)
-        Pattern trainPattern = Pattern.compile(trainIdRegex);
-        Pattern cargoPattern = Pattern.compile(cargoCodeRegex);
+        // Scenario A: Safe Train
+        checkSafety(goodsConsist, "Standard Consist");
 
-        // 3. Sample Inputs for Validation (including valid and invalid cases)
-        String[] testTrainIds = {"TRN-1234", "TRAIN12", "TRN-123", "TRN-12345"};
-        String[] testCargoCodes = {"PET-AB", "PET-ab", "PET123", "PET-XYZ"};
-
-        System.out.println("\n--- Validating Train IDs ---");
-        for (String id : testTrainIds) {
-            validateInput(id, trainPattern, "Train ID");
-        }
-
-        System.out.println("\n--- Validating Cargo Codes ---");
-        for (String code : testCargoCodes) {
-            validateInput(code, cargoPattern, "Cargo Code");
-        }
+        // Scenario B: Unsafe Train (Cylindrical carrying Coal)
+        List<GoodsBogie> unsafeConsist = new ArrayList<>(goodsConsist);
+        unsafeConsist.add(new GoodsBogie("Cylindrical", "Coal")); // Rule Violation!
+        checkSafety(unsafeConsist, "Unsafe Addition Consist");
 
         System.out.println("------------------------------------");
     }
 
     /**
-     * Helper method to validate input using Matcher
+     * Enforces the Safety Rule:
+     * If a bogie is 'Cylindrical', its cargo MUST be 'Petroleum'.
      */
-    private static void validateInput(String input, Pattern pattern, String label) {
-        // Create a Matcher object for the input
-        Matcher matcher = pattern.matcher(input);
+    private static void checkSafety(List<GoodsBogie> list, String label) {
+        System.out.println("\nAnalyzing " + label + "...");
 
-        // matches() checks if the ENTIRE string conforms to the pattern
-        if (matcher.matches()) {
-            System.out.println("[VALID]   " + label + ": " + input);
+        // 3. allMatch() evaluates the entire stream against the lambda predicate
+        boolean isSafe = list.stream().allMatch(b -> {
+            if (b.type.equalsIgnoreCase("Cylindrical")) {
+                return b.cargo.equalsIgnoreCase("Petroleum");
+            }
+            return true; // Non-cylindrical bogies pass this specific check
+        });
+
+        // 4. Display result
+        if (isSafe) {
+            System.out.println("Result: [SAFE] All bogies comply with safety protocols.");
         } else {
-            System.out.println("[INVALID] " + label + ": " + input + " (Format Error)");
+            System.out.println("Result: [UNSAFE] Safety violation detected! Cargo mismatch.");
         }
     }
 }
