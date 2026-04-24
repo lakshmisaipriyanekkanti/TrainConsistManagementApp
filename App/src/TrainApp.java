@@ -1,39 +1,40 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
 
 public class TrainApp {
 
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 1. Initialize a HashSet for Unique Bogie IDs
-        // We use the Set interface to ensure no duplicates are allowed
-        Set<String> bogieIds = new HashSet<>();
+        // 1. Initialize the consist using a LinkedList
+        // LinkedList is ideal for sequential 'chaining' of bogies
+        LinkedList<String> consist = new LinkedList<>();
 
-        System.out.println("Registering bogie IDs...");
+        // 2. Add initial bogies to the consist
+        // add() or addLast() appends to the end of the train
+        consist.add("Engine");
+        consist.add("Sleeper");
+        consist.add("AC Coach");
+        consist.add("Cargo");
+        consist.add("Guard");
 
-        // 2. Adding Bogie IDs (including duplicates)
-        bogieIds.add("BG101");
-        bogieIds.add("BG102");
-        bogieIds.add("BG103");
+        System.out.println("Initial Sequence: " + consist);
 
-        // Intentional duplicate entry
-        System.out.println("Attempting to add duplicate ID: BG101...");
-        bogieIds.add("BG101");
+        // 3. Insert a Pantry Car at index 2 (between Sleeper and AC Coach)
+        // LinkedList makes 'middle' insertions very efficient
+        System.out.println("\nAdding Pantry Car at position 2...");
+        consist.add(2, "Pantry Car");
+        System.out.println("Updated Sequence: " + consist);
 
-        // 3. Adding another unique ID
-        bogieIds.add("BG104");
+        // 4. Removing the first and last bogies
+        // Simulating uncoupling the Engine and the Guard coach
+        System.out.println("\nDetaching the Engine and Guard coach...");
+        consist.removeFirst();
+        consist.removeLast();
 
-        // 4. Display the results
-        System.out.println("\n--- Unique Bogie Registration Summary ---");
-        System.out.println("Registered IDs: " + bogieIds);
-        System.out.println("Total Unique Bogies: " + bogieIds.size());
-
-        // 5. Observe Deduplication Logic
-        if (bogieIds.size() < 5) { // We tried to add 5 items, but only 4 are unique
-            System.out.println("Note: Duplicate IDs were automatically filtered out by the HashSet.");
-        }
-
-        System.out.println("------------------------------------------");
+        // 5. Display the final ordered train consist
+        System.out.println("\n--- Final Ordered Consist ---");
+        System.out.println("Current Layout: " + consist);
+        System.out.println("Total Bogies Remaining: " + consist.size());
+        System.out.println("------------------------------");
     }
 }
