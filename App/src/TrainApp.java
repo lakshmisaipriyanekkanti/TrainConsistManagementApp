@@ -1,40 +1,35 @@
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class TrainApp {
 
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 1. Initialize the consist using a LinkedList
-        // LinkedList is ideal for sequential 'chaining' of bogies
-        LinkedList<String> consist = new LinkedList<>();
+        // 1. Initialize the LinkedHashSet
+        // This ensures uniqueness (Set) AND remembers insertion order (Linked)
+        Set<String> trainFormation = new LinkedHashSet<>();
 
-        // 2. Add initial bogies to the consist
-        // add() or addLast() appends to the end of the train
-        consist.add("Engine");
-        consist.add("Sleeper");
-        consist.add("AC Coach");
-        consist.add("Cargo");
-        consist.add("Guard");
+        // 2. Attach Bogies in a specific sequence
+        System.out.println("Attaching bogies in sequence: Engine -> Sleeper -> Cargo -> Guard");
+        trainFormation.add("Engine");
+        trainFormation.add("Sleeper");
+        trainFormation.add("Cargo");
+        trainFormation.add("Guard");
 
-        System.out.println("Initial Sequence: " + consist);
+        // 3. Attempt to add a duplicate (Business Rule: A bogie cannot be in two places)
+        System.out.println("\nAttempting to attach duplicate bogie: 'Sleeper'...");
+        boolean isAdded = trainFormation.add("Sleeper");
 
-        // 3. Insert a Pantry Car at index 2 (between Sleeper and AC Coach)
-        // LinkedList makes 'middle' insertions very efficient
-        System.out.println("\nAdding Pantry Car at position 2...");
-        consist.add(2, "Pantry Car");
-        System.out.println("Updated Sequence: " + consist);
+        if (!isAdded) {
+            System.out.println("System Alert: Duplicate bogie detected! 'Sleeper' was not added again.");
+        }
 
-        // 4. Removing the first and last bogies
-        // Simulating uncoupling the Engine and the Guard coach
-        System.out.println("\nDetaching the Engine and Guard coach...");
-        consist.removeFirst();
-        consist.removeLast();
-
-        // 5. Display the final ordered train consist
-        System.out.println("\n--- Final Ordered Consist ---");
-        System.out.println("Current Layout: " + consist);
-        System.out.println("Total Bogies Remaining: " + consist.size());
-        System.out.println("------------------------------");
+        // 4. Display the Final Formation
+        // Notice the order remains exactly as it was added (unlike HashSet)
+        System.out.println("\n--- Final Train Formation ---");
+        System.out.println("Consist: " + trainFormation);
+        System.out.println("Total Unique Bogies: " + trainFormation.size());
+        System.out.println("-----------------------------");
     }
 }
