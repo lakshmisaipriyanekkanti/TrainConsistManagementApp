@@ -1,29 +1,48 @@
-// 1. Create a custom exception class
-// By extending Exception, we create a 'Checked Exception'
-class InvalidCapacityException extends Exception {
-    public InvalidCapacityException(String message) {
+// 1. Custom Runtime Exception for Cargo Safety
+// We extend RuntimeException so we don't have to force 'throws' everywhere
+class CargoSafetyException extends RuntimeException {
+    public CargoSafetyException(String message) {
         super(message);
     }
 }
 
-// 2. The PassengerBogie class with validation logic
-class PassengerBogie {
-    String type;
-    int capacity;
+class GoodsBogie {
+    String shape;
+    String cargo;
 
-    // The constructor 'throws' the exception to the caller if validation fails
-    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
-        if (capacity <= 0) {
-            // Throwing the exception immediately (Fail-Fast)
-            throw new InvalidCapacityException("Capacity must be greater than zero. Received: " + capacity);
+    public GoodsBogie(String shape) {
+        this.shape = shape;
+        this.cargo = "Empty";
+    }
+
+    // 2. Business Logic with Exception Handling
+    public void assignCargo(String newCargo) {
+        System.out.println("Attempting to assign [" + newCargo + "] to [" + shape + "] bogie...");
+
+        try {
+            // Safety Rule: Petroleum MUST be in a Cylindrical bogie
+            if (newCargo.equalsIgnoreCase("Petroleum") && !shape.equalsIgnoreCase("Cylindrical")) {
+                throw new CargoSafetyException("SAFETY ALERT: Petroleum cannot be carried in a " + shape + " bogie!");
+            }
+
+            // If check passes, assign the cargo
+            this.cargo = newCargo;
+            System.out.println("Success: Cargo assigned.");
+
+        } catch (CargoSafetyException e) {
+            // 3. Catch block: Handle the specific error gracefully
+            System.out.println("Error Handled: " + e.getMessage());
+            System.out.println("Action: Assignment blocked to prevent hazards.");
+
+        } finally {
+            // 4. Finally block: Mandatory execution (Logging/Cleanup)
+            System.out.println("Log: Safety validation check completed for this bogie.");
         }
-        this.type = type;
-        this.capacity = capacity;
     }
 
     @Override
     public String toString() {
-        return type + " (" + capacity + " seats)";
+        return shape + " bogie [Current Cargo: " + cargo + "]";
     }
 }
 
@@ -31,32 +50,21 @@ public class TrainApp {
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // Test Case 1: Valid Capacity
-        try {
-            System.out.println("\nAttempting to create a valid bogie (Sleeper, 72 seats)...");
-            PassengerBogie validBogie = new PassengerBogie("Sleeper", 72);
-            System.out.println("Success: " + validBogie);
-        } catch (InvalidCapacityException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-
-        // Test Case 2: Zero Capacity (Invalid)
-        try {
-            System.out.println("\nAttempting to create an invalid bogie (Economy, 0 seats)...");
-            PassengerBogie zeroBogie = new PassengerBogie("Economy", 0);
-        } catch (InvalidCapacityException e) {
-            System.out.println("Caught Expected Exception: " + e.getMessage());
-        }
-
-        // Test Case 3: Negative Capacity (Invalid)
-        try {
-            System.out.println("\nAttempting to create an invalid bogie (VIP, -10 seats)...");
-            PassengerBogie negativeBogie = new PassengerBogie("VIP", -10);
-        } catch (InvalidCapacityException e) {
-            System.out.println("Caught Expected Exception: " + e.getMessage());
-        }
+        // Test Case 1: Valid Assignment
+        GoodsBogie g1 = new GoodsBogie("Cylindrical");
+        g1.assignCargo("Petroleum");
+        System.out.println(g1);
 
         System.out.println("\n------------------------------------");
-        System.out.println("System execution continued safely.");
+
+        // Test Case 2: Unsafe Assignment (Rectangular + Petroleum)
+        GoodsBogie g2 = new GoodsBogie("Rectangular");
+        g2.assignCargo("Petroleum");
+        System.out.println(g2);
+
+        System.out.println("\n------------------------------------");
+
+        // 5. Program continuation check
+        System.out.println("Status: System operational. All safety checks processed.");
     }
 }
