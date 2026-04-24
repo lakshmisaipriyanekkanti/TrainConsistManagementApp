@@ -1,20 +1,21 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-// Reusing the Bogie class from UC7
+// Standard Bogie class reused for consistency
 class Bogie {
-    String name;
+    String type;
     int capacity;
 
-    public Bogie(String name, int capacity) {
-        this.name = name;
+    public Bogie(String type, int capacity) {
+        this.type = type;
         this.capacity = capacity;
     }
 
     @Override
     public String toString() {
-        return name + " (" + capacity + " seats)";
+        return "Bogie{Type='" + type + "', Capacity=" + capacity + "}";
     }
 }
 
@@ -22,36 +23,32 @@ public class TrainApp {
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 1. Create a List of Bogies
+        // 1. Create a List of Bogies (including multiple of the same type for testing)
         List<Bogie> allBogies = new ArrayList<>();
+        allBogies.add(new Bogie("Sleeper", 72));
         allBogies.add(new Bogie("Sleeper", 72));
         allBogies.add(new Bogie("AC Chair", 56));
         allBogies.add(new Bogie("First Class", 24));
-        allBogies.add(new Bogie("General", 90));
-        allBogies.add(new Bogie("Superfast Sleeper", 80));
+        allBogies.add(new Bogie("AC Chair", 56));
+        allBogies.add(new Bogie("Goods", 1000));
 
-        System.out.println("All Available Bogies: " + allBogies);
+        System.out.println("Processing total bogies: " + allBogies.size());
 
-        // 2. Define Capacity Threshold
-        int threshold = 60;
-        System.out.println("\nFiltering bogies with capacity > " + threshold + "...");
+        // 2. Apply groupingBy Collector
+        // This creates a Map<String, List<Bogie>>
+        // Key: Bogie Type | Value: List of all bogies of that type
+        Map<String, List<Bogie>> groupedBogies = allBogies.stream()
+                .collect(Collectors.groupingBy(b -> b.type));
 
-        // 3. Apply Stream API Pipeline
-        // stream() -> filter (the logic) -> collect (the result)
-        List<Bogie> highCapacityBogies = allBogies.stream()
-                .filter(b -> b.capacity > threshold)
-                .collect(Collectors.toList());
+        // 3. Display the Structured Report
+        System.out.println("\n--- Train Consist Grouped Report ---");
+        groupedBogies.forEach((type, list) -> {
+            System.out.println("Category: [" + type + "] - Count: " + list.size());
+            list.forEach(b -> System.out.println("  -> " + b));
+        });
 
-        // 4. Display Filtered Results
-        System.out.println("--- High Capacity Bogies Found ---");
-        if (highCapacityBogies.isEmpty()) {
-            System.out.println("No bogies found matching the criteria.");
-        } else {
-            highCapacityBogies.forEach(b -> System.out.println(">> " + b));
-        }
-
-        // 5. Verify Original List Integrity (Test Case Requirement)
-        System.out.println("\nVerification: Original list size remains " + allBogies.size());
+        // 4. Verification: Check Original Integrity
+        System.out.println("\nVerification: Original list is still " + allBogies.size() + " items.");
         System.out.println("------------------------------------");
     }
 }
