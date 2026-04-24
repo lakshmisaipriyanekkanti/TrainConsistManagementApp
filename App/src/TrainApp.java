@@ -1,9 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-// Standard Bogie class reused for consistency
+// Reusing our Bogie class with the capacity field
 class Bogie {
     String type;
     int capacity;
@@ -15,7 +13,7 @@ class Bogie {
 
     @Override
     public String toString() {
-        return "Bogie{Type='" + type + "', Capacity=" + capacity + "}";
+        return type + " (" + capacity + " seats)";
     }
 }
 
@@ -23,32 +21,40 @@ public class TrainApp {
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 1. Create a List of Bogies (including multiple of the same type for testing)
-        List<Bogie> allBogies = new ArrayList<>();
-        allBogies.add(new Bogie("Sleeper", 72));
-        allBogies.add(new Bogie("Sleeper", 72));
-        allBogies.add(new Bogie("AC Chair", 56));
-        allBogies.add(new Bogie("First Class", 24));
-        allBogies.add(new Bogie("AC Chair", 56));
-        allBogies.add(new Bogie("Goods", 1000));
+        // 1. Initialize the Bogie List
+        List<Bogie> trainConsist = new ArrayList<>();
+        trainConsist.add(new Bogie("Sleeper", 72));
+        trainConsist.add(new Bogie("AC Chair", 56));
+        trainConsist.add(new Bogie("First Class", 24));
+        trainConsist.add(new Bogie("General", 90));
 
-        System.out.println("Processing total bogies: " + allBogies.size());
+        System.out.println("Current Consist: " + trainConsist);
 
-        // 2. Apply groupingBy Collector
-        // This creates a Map<String, List<Bogie>>
-        // Key: Bogie Type | Value: List of all bogies of that type
-        Map<String, List<Bogie>> groupedBogies = allBogies.stream()
-                .collect(Collectors.groupingBy(b -> b.type));
+        // 2. The Stream Reduction Pipeline
+        // Step A: .stream() - Start the process
+        // Step B: .map() - Extract only the capacity (Bogie -> Integer)
+        // Step C: .reduce() - Combine all integers using sum (Starting at 0)
+        int totalSeats = trainConsist.stream()
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
 
-        // 3. Display the Structured Report
-        System.out.println("\n--- Train Consist Grouped Report ---");
-        groupedBogies.forEach((type, list) -> {
-            System.out.println("Category: [" + type + "] - Count: " + list.size());
-            list.forEach(b -> System.out.println("  -> " + b));
-        });
+        // 3. Display the Quantitative Metric
+        System.out.println("\n--- Operational Analytics ---");
+        System.out.println("Total Bogies: " + trainConsist.size());
+        System.out.println("Total Seating Capacity: " + totalSeats + " seats");
 
-        // 4. Verification: Check Original Integrity
-        System.out.println("\nVerification: Original list is still " + allBogies.size() + " items.");
+        // 4. Verification (Test Case Logic)
+        if (totalSeats == (72 + 56 + 24 + 90)) {
+            System.out.println("Verification Success: Total matches the sum of all bogies.");
+        }
+
+        // 5. Empty List Handling Test
+        List<Bogie> emptyTrain = new ArrayList<>();
+        int emptyTotal = emptyTrain.stream()
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
+        System.out.println("Empty Train Capacity: " + emptyTotal);
+
         System.out.println("------------------------------------");
     }
 }
