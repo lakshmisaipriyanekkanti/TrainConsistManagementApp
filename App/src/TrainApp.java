@@ -1,8 +1,8 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-// 1. Defining the Bogie Class (Custom Object)
+// Reusing the Bogie class from UC7
 class Bogie {
     String name;
     int capacity;
@@ -22,27 +22,36 @@ public class TrainApp {
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 2. Create a List of Bogie objects
-        List<Bogie> passengerBogies = new ArrayList<>();
+        // 1. Create a List of Bogies
+        List<Bogie> allBogies = new ArrayList<>();
+        allBogies.add(new Bogie("Sleeper", 72));
+        allBogies.add(new Bogie("AC Chair", 56));
+        allBogies.add(new Bogie("First Class", 24));
+        allBogies.add(new Bogie("General", 90));
+        allBogies.add(new Bogie("Superfast Sleeper", 80));
 
-        // 3. Add bogie data
-        passengerBogies.add(new Bogie("Sleeper", 72));
-        passengerBogies.add(new Bogie("AC Chair", 56));
-        passengerBogies.add(new Bogie("First Class", 24));
-        passengerBogies.add(new Bogie("General", 90));
+        System.out.println("All Available Bogies: " + allBogies);
 
-        System.out.println("Initial Bogie List (Unsorted):");
-        System.out.println(passengerBogies);
+        // 2. Define Capacity Threshold
+        int threshold = 60;
+        System.out.println("\nFiltering bogies with capacity > " + threshold + "...");
 
-        // 4. Sort the list using a Comparator (High to Low capacity)
-        // We use a Lambda expression to define the comparison logic
-        passengerBogies.sort((b1, b2) -> b2.capacity - b1.capacity);
+        // 3. Apply Stream API Pipeline
+        // stream() -> filter (the logic) -> collect (the result)
+        List<Bogie> highCapacityBogies = allBogies.stream()
+                .filter(b -> b.capacity > threshold)
+                .collect(Collectors.toList());
 
-        System.out.println("\n--- Sorted Bogies (Highest Capacity First) ---");
-        for (Bogie b : passengerBogies) {
-            System.out.println(">> " + b.name + " | Capacity: " + b.capacity);
+        // 4. Display Filtered Results
+        System.out.println("--- High Capacity Bogies Found ---");
+        if (highCapacityBogies.isEmpty()) {
+            System.out.println("No bogies found matching the criteria.");
+        } else {
+            highCapacityBogies.forEach(b -> System.out.println(">> " + b));
         }
 
-        System.out.println("----------------------------------------------");
+        // 5. Verify Original List Integrity (Test Case Requirement)
+        System.out.println("\nVerification: Original list size remains " + allBogies.size());
+        System.out.println("------------------------------------");
     }
 }
