@@ -1,41 +1,39 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TrainApp {
 
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 1. Initialize the consist
-        List<String> passengerBogies = new ArrayList<>();
+        // 1. Initialize a HashSet for Unique Bogie IDs
+        // We use the Set interface to ensure no duplicates are allowed
+        Set<String> bogieIds = new HashSet<>();
 
-        // 2. Add Passenger Bogies (Creating the Consist)
-        // add() appends elements to the end of the list
-        passengerBogies.add("Sleeper");
-        passengerBogies.add("AC Chair");
-        passengerBogies.add("First Class");
+        System.out.println("Registering bogie IDs...");
 
-        System.out.println("Adding bogies: Sleeper, AC Chair, First Class...");
-        System.out.println("Current Consist: " + passengerBogies);
+        // 2. Adding Bogie IDs (including duplicates)
+        bogieIds.add("BG101");
+        bogieIds.add("BG102");
+        bogieIds.add("BG103");
 
-        // 3. Remove a Bogie (Simulating uncoupling)
-        // remove() searches for the object and deletes it, shifting others left
-        System.out.println("\nRemoving bogie: AC Chair...");
-        passengerBogies.remove("AC Chair");
-        System.out.println("Updated Consist: " + passengerBogies);
+        // Intentional duplicate entry
+        System.out.println("Attempting to add duplicate ID: BG101...");
+        bogieIds.add("BG101");
 
-        // 4. Existence Check (Using contains)
-        // contains() returns a boolean (true/false)
-        System.out.println("\nChecking for Sleeper bogie...");
-        if (passengerBogies.contains("Sleeper")) {
-            System.out.println("Status: Sleeper bogie is present in the consist.");
-        } else {
-            System.out.println("Status: Sleeper bogie not found.");
+        // 3. Adding another unique ID
+        bogieIds.add("BG104");
+
+        // 4. Display the results
+        System.out.println("\n--- Unique Bogie Registration Summary ---");
+        System.out.println("Registered IDs: " + bogieIds);
+        System.out.println("Total Unique Bogies: " + bogieIds.size());
+
+        // 5. Observe Deduplication Logic
+        if (bogieIds.size() < 5) { // We tried to add 5 items, but only 4 are unique
+            System.out.println("Note: Duplicate IDs were automatically filtered out by the HashSet.");
         }
 
-        // 5. Final State Summary
-        System.out.println("\nFinal Bogie Count: " + passengerBogies.size());
-        System.out.println("Final Consist: " + passengerBogies);
-        System.out.println("------------------------------------");
+        System.out.println("------------------------------------------");
     }
 }
