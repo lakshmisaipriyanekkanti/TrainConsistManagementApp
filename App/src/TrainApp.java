@@ -1,19 +1,29 @@
-import java.util.ArrayList;
-import java.util.List;
+// 1. Create a custom exception class
+// By extending Exception, we create a 'Checked Exception'
+class InvalidCapacityException extends Exception {
+    public InvalidCapacityException(String message) {
+        super(message);
+    }
+}
 
-// 1. Define the GoodsBogie class with type and cargo properties
-class GoodsBogie {
+// 2. The PassengerBogie class with validation logic
+class PassengerBogie {
     String type;
-    String cargo;
+    int capacity;
 
-    public GoodsBogie(String type, String cargo) {
+    // The constructor 'throws' the exception to the caller if validation fails
+    public PassengerBogie(String type, int capacity) throws InvalidCapacityException {
+        if (capacity <= 0) {
+            // Throwing the exception immediately (Fail-Fast)
+            throw new InvalidCapacityException("Capacity must be greater than zero. Received: " + capacity);
+        }
         this.type = type;
-        this.cargo = cargo;
+        this.capacity = capacity;
     }
 
     @Override
     public String toString() {
-        return type + " [" + cargo + "]";
+        return type + " (" + capacity + " seats)";
     }
 }
 
@@ -21,43 +31,32 @@ public class TrainApp {
     public static void main(String[] args) {
         System.out.println("=== Train Consist Management App ===");
 
-        // 2. Prepare a list of Goods Bogies
-        List<GoodsBogie> goodsConsist = new ArrayList<>();
-        goodsConsist.add(new GoodsBogie("Box", "Coal"));
-        goodsConsist.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        goodsConsist.add(new GoodsBogie("Open", "Grain"));
-
-        // Scenario A: Safe Train
-        checkSafety(goodsConsist, "Standard Consist");
-
-        // Scenario B: Unsafe Train (Cylindrical carrying Coal)
-        List<GoodsBogie> unsafeConsist = new ArrayList<>(goodsConsist);
-        unsafeConsist.add(new GoodsBogie("Cylindrical", "Coal")); // Rule Violation!
-        checkSafety(unsafeConsist, "Unsafe Addition Consist");
-
-        System.out.println("------------------------------------");
-    }
-
-    /**
-     * Enforces the Safety Rule:
-     * If a bogie is 'Cylindrical', its cargo MUST be 'Petroleum'.
-     */
-    private static void checkSafety(List<GoodsBogie> list, String label) {
-        System.out.println("\nAnalyzing " + label + "...");
-
-        // 3. allMatch() evaluates the entire stream against the lambda predicate
-        boolean isSafe = list.stream().allMatch(b -> {
-            if (b.type.equalsIgnoreCase("Cylindrical")) {
-                return b.cargo.equalsIgnoreCase("Petroleum");
-            }
-            return true; // Non-cylindrical bogies pass this specific check
-        });
-
-        // 4. Display result
-        if (isSafe) {
-            System.out.println("Result: [SAFE] All bogies comply with safety protocols.");
-        } else {
-            System.out.println("Result: [UNSAFE] Safety violation detected! Cargo mismatch.");
+        // Test Case 1: Valid Capacity
+        try {
+            System.out.println("\nAttempting to create a valid bogie (Sleeper, 72 seats)...");
+            PassengerBogie validBogie = new PassengerBogie("Sleeper", 72);
+            System.out.println("Success: " + validBogie);
+        } catch (InvalidCapacityException e) {
+            System.out.println("Error: " + e.getMessage());
         }
+
+        // Test Case 2: Zero Capacity (Invalid)
+        try {
+            System.out.println("\nAttempting to create an invalid bogie (Economy, 0 seats)...");
+            PassengerBogie zeroBogie = new PassengerBogie("Economy", 0);
+        } catch (InvalidCapacityException e) {
+            System.out.println("Caught Expected Exception: " + e.getMessage());
+        }
+
+        // Test Case 3: Negative Capacity (Invalid)
+        try {
+            System.out.println("\nAttempting to create an invalid bogie (VIP, -10 seats)...");
+            PassengerBogie negativeBogie = new PassengerBogie("VIP", -10);
+        } catch (InvalidCapacityException e) {
+            System.out.println("Caught Expected Exception: " + e.getMessage());
+        }
+
+        System.out.println("\n------------------------------------");
+        System.out.println("System execution continued safely.");
     }
 }
