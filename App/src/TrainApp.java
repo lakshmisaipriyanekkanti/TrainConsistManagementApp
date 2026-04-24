@@ -1,26 +1,41 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * TrainApp - UC1: Initialize Train and Display Consist Summary
- * The class name now matches the filename 'TrainApp.java'.
- */
 public class TrainApp {
 
     public static void main(String[] args) {
-        // 1. Application prints welcome message
         System.out.println("=== Train Consist Management App ===");
 
-        // 2. Train consist is initialized
-        // Using List (Interface) and ArrayList (Implementation)
-        List<String> consist = new ArrayList<>();
+        // 1. Initialize the consist
+        List<String> passengerBogies = new ArrayList<>();
 
-        // 3. Initial bogie count is displayed
-        System.out.println("Initializing train consist...");
-        System.out.println("Initial Bogie Count: " + consist.size());
+        // 2. Add Passenger Bogies (Creating the Consist)
+        // add() appends elements to the end of the list
+        passengerBogies.add("Sleeper");
+        passengerBogies.add("AC Chair");
+        passengerBogies.add("First Class");
 
-        // 4. Program continues
-        System.out.println("System ready for bogie assignment.");
+        System.out.println("Adding bogies: Sleeper, AC Chair, First Class...");
+        System.out.println("Current Consist: " + passengerBogies);
+
+        // 3. Remove a Bogie (Simulating uncoupling)
+        // remove() searches for the object and deletes it, shifting others left
+        System.out.println("\nRemoving bogie: AC Chair...");
+        passengerBogies.remove("AC Chair");
+        System.out.println("Updated Consist: " + passengerBogies);
+
+        // 4. Existence Check (Using contains)
+        // contains() returns a boolean (true/false)
+        System.out.println("\nChecking for Sleeper bogie...");
+        if (passengerBogies.contains("Sleeper")) {
+            System.out.println("Status: Sleeper bogie is present in the consist.");
+        } else {
+            System.out.println("Status: Sleeper bogie not found.");
+        }
+
+        // 5. Final State Summary
+        System.out.println("\nFinal Bogie Count: " + passengerBogies.size());
+        System.out.println("Final Consist: " + passengerBogies);
         System.out.println("------------------------------------");
     }
 }
